@@ -1,0 +1,18 @@
+#leftAnchorPane {
+    -fx-background-image: url(../bookshop.png);
+    -fx-background-position: center center;
+    -fx-background-size: cover;
+    -fx-min-height: 100%;
+}
+
+.btn-radius {
+    -fx-background-radius: 20px;
+}
+
+.btn {
+    -fx-background-color: #2563eb;
+}
+
+.btn:hover {
+    -fx-background-color: #3b82f6;
+}

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="888.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.controller.LoginPageController">
+	<children>
+		<AnchorPane id="leftAnchorPane" prefHeight="503.0" prefWidth="497.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<children>
+				<ImageView fitHeight="52.0" fitWidth="52.0" layoutX="166.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true">
+				</ImageView>
+				<Label alignment="CENTER" layoutX="166.0" layoutY="59.0" prefHeight="23.0" prefWidth="205.0" style="-fx-font-weight: 900; -fx-font-size: 30; -fx-font-style: italic;" text="Giga projekt">
+					<opaqueInsets>
+						<Insets />
+					</opaqueInsets>
+				</Label>
+				<Label alignment="CENTER" layoutX="166.0" layoutY="96.0" prefHeight="62.0" prefWidth="205.0" text="O_O" textAlignment="JUSTIFY" wrapText="true">
+				</Label>
+			</children>
+		</AnchorPane>
+		<Pane layoutX="569.0" layoutY="87.2" prefHeight="263.0" prefWidth="286.0" AnchorPane.bottomAnchor="153.0" AnchorPane.topAnchor="87.0">
+			<children>
+				<TextField fx:id="txtLogin" layoutX="2.0" layoutY="-3.0" prefHeight="34.0" prefWidth="280.0" promptText="username" />
+				<PasswordField fx:id="txtPassword" layoutX="2.0" layoutY="58.0" prefHeight="34.0" prefWidth="280.0" promptText="password" />
+				<Button fx:id="btnSignIn" defaultButton="true" focusTraversable="false" layoutX="2.0" layoutY="136.0" mnemonicParsing="false" onAction="#onSingInClick" prefHeight="34.0" prefWidth="280.0" text="Sign in" textFill="WHITE">
+			   <cursor>
+				  <Cursor fx:constant="HAND" />
+			   </cursor>
+               <styleClass>
+                  <String fx:value="btn-radius" />
+                  <String fx:value="btn" />
+               </styleClass></Button>
+				<Button fx:id="btnSignUp" focusTraversable="false" layoutX="2.0" layoutY="202.0" mnemonicParsing="false" onAction="#onSignUpClick" prefHeight="34.0" prefWidth="280.0" styleClass="btn-radius" text="Sign up">
+			   <cursor>
+				  <Cursor fx:constant="HAND" />
+			   </cursor></Button>
+				<Separator layoutX="8.0" layoutY="182.0" prefHeight="7.0" prefWidth="275.0" />
+				<Label alignment="CENTER" layoutX="131.0" layoutY="172.0" prefHeight="23.0" prefWidth="31.0" style="-fx-background-color: #fff;" text="Or" textFill="#5b5a5a">
+				</Label>
+				<Label fx:id="labelErrors" alignment="CENTER" layoutX="2.0" layoutY="102.0" prefHeight="23.0" prefWidth="280.0" textFill="#ff6354">
+				</Label>
+			</children>
+		</Pane>
+	</children>
+</AnchorPane>
