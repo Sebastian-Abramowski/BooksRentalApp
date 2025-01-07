@@ -10,8 +10,8 @@ import java.util.List;
 import org.openjfx.database.Borrow;
 import org.openjfx.helpers.Filter;
 import org.openjfx.helpers.Searchable;
-import org.openjfx.requests.GetBook;
-import org.openjfx.requests.GetUserBorrows;
+import org.openjfx.helpers.UIFormater;
+import org.openjfx.requests.*;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,16 +35,19 @@ public class UViewBorrowedBooksController implements Initializable {
 		public ObjectProperty<String> category;
 		public ObjectProperty<Boolean> wasPickedUp;
 		public ObjectProperty<LocalDate> borrowDate;
-		public ObjectProperty<Integer> daysReminded;
+		public ObjectProperty<Integer> daysRemaining;
 
 		public DisplayRecord(Borrow borrow) {
-			var book = GetBook.request(borrow.getBookId());
+			var bookInstance = GetBookInstance.request(borrow.getBookInstanceId());
+			var book = bookInstance.getBook();
+
 			title = new SimpleObjectProperty<>(book.getTitle());
-			author = new SimpleObjectProperty<>(book.getAuthor());
-			category = new SimpleObjectProperty<>(book.getCategory());
+			author = new SimpleObjectProperty<>(UIFormater.formatAuthors(GetBookAuthors.request(book)));
+			category = new SimpleObjectProperty<>(book.getCategory().getName());
 			wasPickedUp = new SimpleObjectProperty<>(borrow.getAcknowledged());
-			borrowDate = new SimpleObjectProperty<>(borrow.getBorrowDate());
-			daysReminded = new SimpleObjectProperty<>((int)ChronoUnit.DAYS.between(LocalDate.now(), borrow.getReturnDate()));
+			borrowDate = new SimpleObjectProperty<>(borrow.getDate());
+			LocalDate calculatedDate = borrow.getDate().plusDays(borrow.getDays());
+			daysRemaining = new SimpleObjectProperty<>((int)ChronoUnit.DAYS.between(LocalDate.now(), calculatedDate));
 		}
 
 		public List<String> getSearchParams() {
@@ -58,9 +61,9 @@ public class UViewBorrowedBooksController implements Initializable {
 		}
 
 		public int rowStyleHelper(){
-			if(daysReminded.get() <= 0)
+			if(daysRemaining.get() <= 0)
 				return 0;
-			 else if (daysReminded.get() <= 5)
+			 else if (daysRemaining.get() <= 5)
 				return 2;
 			else
 				return 1;
@@ -96,7 +99,7 @@ public class UViewBorrowedBooksController implements Initializable {
 		category.setCellValueFactory(cellData -> cellData.getValue().category);
 		wasPickedUp.setCellValueFactory(cellData -> cellData.getValue().wasPickedUp);
 		borrowDate.setCellValueFactory(cellData -> cellData.getValue().borrowDate);
-		daysReminded.setCellValueFactory(cellData -> cellData.getValue().daysReminded);
+		daysReminded.setCellValueFactory(cellData -> cellData.getValue().daysRemaining);
 
 		tableBooks.setItems(borrowsList);
 
@@ -119,9 +122,13 @@ public class UViewBorrowedBooksController implements Initializable {
 
 	private void refreshList() {
 		borrowsList.clear();
-		var borrows = GetUserBorrows.request(SceneController.getCurrentUser());
-		for (var borow : borrows) {
-			borrowsList.add(new DisplayRecord(borow));
+		var client = GetClient.request( SceneController.getCurrentUser());
+		var bookArrayList = GetBorrows.fromActiveBorrows( GetActiveBorrows.request() );
+		if (bookArrayList != null) {
+			for (var borrow : bookArrayList) {
+				if (borrow.getClient().getId() == client.getId())
+					borrowsList.add(new DisplayRecord(borrow));
+			}
 		}
 	}
 

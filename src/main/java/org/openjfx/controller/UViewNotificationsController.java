@@ -1,13 +1,12 @@
 package org.openjfx.controller;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.openjfx.database.Book;
-import org.openjfx.requests.GetBook;
-import org.openjfx.requests.GetBorrows;
+import org.openjfx.requests.GetActiveBorrows;
+import org.openjfx.requests.GetClient;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,8 +21,6 @@ public class UViewNotificationsController implements Initializable {
 	@FXML
 	private Label notification2;
 
-	@FXML
-	private Label notification3;
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -38,13 +35,17 @@ public class UViewNotificationsController implements Initializable {
 	void refreshNotifications(){
 		setNotification1();
 		setNotification2();
-		setNotification3();
 	}
 	void setNotification1() {
 		ArrayList<Book> books = new ArrayList<Book>();
-		for (var element: GetBorrows.request(SceneController.getCurrentUser())){
-			if (!element.getAcknowledged() && element.getReturnDate().isAfter( LocalDate.now()) ){
-				books.add( GetBook.request(element.getBookId()));
+		var client = GetClient.request(SceneController.getCurrentUser());
+		if (client == null) {
+			System.out.println("Client is not logged");
+			return;
+		}
+		for (var borrow : GetActiveBorrows.request(client)){
+			if (!borrow.getBorrow().getAcknowledged() && !borrow.isBorrowLate()) {
+				books.add( borrow.getBorrow().getBookInstance().getBook() );
 			}
 		}
 
@@ -52,9 +53,9 @@ public class UViewNotificationsController implements Initializable {
 		notification1.setManaged( books.size() != 0 );
 
 		if (books.size() == 1) {
-			notification1.setText( "Your wish/es has been accepted, collect \"" + books.get( 0 ).getTitle() + "\"");
+			notification1.setText( "Your wish has been accepted, collect \"" + books.get( 0 ).getTitle() + "\"");
 		} else if (books.size() > 1) {
-			StringBuilder text = new StringBuilder( "Your wish/es has been accepted, collect:" );
+			StringBuilder text = new StringBuilder( "Your wishes has been accepted, collect:" );
 			for (var book : books) {
 				text.append( "\n\"" ).append( book.getTitle() ).append( "\"," );
 			}
@@ -65,9 +66,14 @@ public class UViewNotificationsController implements Initializable {
 
 	void setNotification2() {
 		ArrayList<Book> books = new ArrayList<Book>();
-		for (var element: GetBorrows.request(SceneController.getCurrentUser())){
-			if (!element.getReturnDate().isAfter( LocalDate.now() )){
-				books.add( GetBook.request(element.getBookId()));
+		var client = GetClient.request(SceneController.getCurrentUser());
+		if (client == null) {
+			System.out.println("Client is not loged");
+			return;
+		}
+		for (var borrow : GetActiveBorrows.request(client)){
+			if (borrow.isBorrowLate() ){
+				books.add( borrow.getBorrow().getBookInstance().getBook() );
 			}
 		}
 		notification2.setVisible( books.size() != 0 );
@@ -87,10 +93,4 @@ public class UViewNotificationsController implements Initializable {
 		}
 	}
 
-	void setNotification3() {
-			notification3.setVisible( false );
-			notification3.setManaged( false );
-		}
-	}
-
-
+}

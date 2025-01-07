@@ -6,16 +6,17 @@ import java.util.List;
 import org.openjfx.database.User;
 
 public class GetTabs extends Request {
-	public static List<TabData> request(User usr) {
-
+	public static List<TabData> request(User user) {
 		var list = new ArrayList<TabData>();
 
-		if (usr.isAdmin())
+		if (GetAdmin.request(user) != null)
 		{
 			list.add(new TabData("All books", "AdminView_AllBooks"));
 			list.add(new TabData("Borrowed books", "AdminView_BorrowedBooks"));
 			list.add(new TabData("Wanted to be borrowed", "AdminView_WantedBooks"));
 			list.add(new TabData("Add book", "AdminView_AddBook"));
+			list.add(new TabData("Add category", "AdminView_AddCategory"));
+			list.add(new TabData("Add author", "AdminView_AddAuthor"));
 			list.add(new TabData("Notifications", "AdminView_Notifications"));
 		}
 		else {

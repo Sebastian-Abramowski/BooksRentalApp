@@ -1,12 +1,13 @@
 package org.openjfx.controller;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import org.openjfx.database.Book;
 import org.openjfx.requests.*;
 import org.openjfx.helpers.Filter;
-
+import org.openjfx.helpers.UIFormater;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -49,10 +50,10 @@ public class UViewAvailableBooksController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		title.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getTitle()));
-		author.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAuthor()));
-		category.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCategory()));
+		author.setCellValueFactory(cellData -> new SimpleObjectProperty<>(UIFormater.formatAuthors(GetBookAuthors.request(cellData.getValue()))));
+		category.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCategory().toString()));
 		rating.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getRating()));
-		amount.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAmount()));
+		amount.setCellValueFactory(cellData -> new SimpleObjectProperty<>(GetAvailableBookAmount.request(cellData.getValue())));
 
 		request.setCellFactory(Utils.createButtonInsideTableColumn("request", book -> requestBook(book)));
 
@@ -105,13 +106,24 @@ public class UViewAvailableBooksController implements Initializable {
 				System.out.println("max days is 60");
 				return;
 			}
-			if (GetWishes.request(SceneController.getCurrentUser()).size()  +
-					GetBorrows.request(SceneController.getCurrentUser()).size()>4){
-				System.out.println("max borrowed books at once is 5!");
+			var client = GetClient.request(SceneController.getCurrentUser());
+			if (client == null) {
+				System.out.println("Client is not logged");
 				return;
 			}
-			AddWish.request(SceneController.getCurrentUser(), book, days);
-			System.out.println("Wishe made of " + book.getId() + " on " + days);
+			if (GetWishes.request(client).size() + GetActiveBorrows.request(client).size() > 5) {
+				System.out.println("Max borrowed (and wished) books at once is 5!");
+				return;
+			}
+//			Now we allow for wishes when amount is not sufficient
+//			if(!(GetAvailableBookAmount.request(book) > 0)) {
+//				System.out.println("Not enough these books to be borrowed");
+//				return;
+//			}
+
+
+			AddWish.request(client, book, days);
+			System.out.println("Wish made of " + book.getId() + " on " + LocalDate.now() + " for " + days + " days");
 			UserViewMainController.instance.selectTab("Wished books");
 		}
 		catch (NumberFormatException e) {

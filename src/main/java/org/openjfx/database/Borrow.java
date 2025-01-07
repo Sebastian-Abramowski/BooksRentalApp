@@ -1,51 +1,186 @@
 package org.openjfx.database;
 
-import org.openjfx.helpers.Searchable;
-import org.openjfx.requests.GetBook;
-import org.openjfx.requests.GetUser;
-
-import java.time.LocalDate;
-import java.sql.Date;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
+
+import org.openjfx.helpers.Searchable;
+
+import org.openjfx.requests.GetBookInstance;
+import org.openjfx.requests.GetAdmin;
+import org.openjfx.requests.GetClient;
 
 public class Borrow implements Searchable {
 	private int id;
-	private int userId;
-	private int bookId;
+	private int book_instance_id;
 	private int days;
-	private LocalDate borrowDate;
+	private LocalDate date;
 	private Boolean acknowledged;
+	private int approver_id;
+	private int client_id;
 
-	public Borrow(int id, int userId, int bookId, int days, LocalDate borrowDate, Boolean acknowledged) {
+	/* DO NOT USE DIRECTLY! */
+	private BookInstance book_instance = null;
+	private Admin approver = null;
+	private Client client = null;
+
+	public Borrow(int id, int book_instance_id, int days, LocalDate date, Boolean acknowledged, int approver_id, int client_id) {
 		this.id = id;
-		this.userId = userId;
-		this.bookId = bookId;
+		this.book_instance_id = book_instance_id;
 		this.days = days;
-		this.borrowDate = borrowDate;
+		this.date = date;
 		this.acknowledged = acknowledged;
+		this.approver_id = approver_id;
+		this.client_id = client_id;
 	}
 
-	public Borrow(int id, int userId, int bookId, int days, Date borrowDate, Boolean acknowledged) {
-		this(id, userId, bookId, days, borrowDate.toLocalDate(), acknowledged);
+	public Borrow(int id, BookInstance book_instance, int days, LocalDate date, Boolean acknowledged, int approver_id, int client_id) {
+		this.id = id;
+		this.book_instance_id = book_instance.getId();
+		this.days = days;
+		this.date = date;
+		this.acknowledged = acknowledged;
+		this.approver_id = approver_id;
+		this.client_id = client_id;
+
+		this.book_instance = book_instance;
+	}
+
+	public Borrow(int id, int book_instance_id, int days, LocalDate date, Boolean acknowledged, Admin approver, int client_id) {
+		this.id = id;
+		this.book_instance_id = book_instance_id;
+		this.days = days;
+		this.date = date;
+		this.acknowledged = acknowledged;
+		this.approver_id = approver.getId();
+		this.client_id = client_id;
+
+		this.approver = approver;
+	}
+
+	public Borrow(int id, int book_instance_id, int days, LocalDate date, Boolean acknowledged, int approver_id, Client client) {
+		this.id = id;
+		this.book_instance_id = book_instance_id;
+		this.days = days;
+		this.date = date;
+		this.acknowledged = acknowledged;
+		this.approver_id = approver_id;
+		this.client_id = client.getId();
+
+		this.client = client;
+	}
+
+	public Borrow(int id, BookInstance book_instance, int days, LocalDate date, Boolean acknowledged, Admin approver, int client_id) {
+		this.id = id;
+		this.book_instance_id = book_instance.getId();
+		this.days = days;
+		this.date = date;
+		this.acknowledged = acknowledged;
+		this.approver_id = approver.getId();
+		this.client_id = client_id;
+
+		this.book_instance = book_instance;
+		this.approver = approver;
+	}
+
+	public Borrow(int id, BookInstance book_instance, int days, LocalDate date, Boolean acknowledged, int approver_id, Client client) {
+		this.id = id;
+		this.book_instance_id = book_instance.getId();
+		this.days = days;
+		this.date = date;
+		this.acknowledged = acknowledged;
+		this.approver_id = approver_id;
+		this.client_id = client.getId();
+
+		this.book_instance = book_instance;
+		this.client = client;
+	}
+
+	public Borrow(int id, int book_instance_id, int days, LocalDate date, Boolean acknowledged, Admin approver, Client client) {
+		this.id = id;
+		this.book_instance_id = book_instance_id;
+		this.days = days;
+		this.date = date;
+		this.acknowledged = acknowledged;
+		this.approver_id = approver.getId();
+		this.client_id = client.getId();
+
+		this.approver = approver;
+		this.client = client;
+	}
+
+	public Borrow(int id, BookInstance book_instance, int days, LocalDate date, Boolean acknowledged, Admin approver, Client client) {
+		this.id = id;
+		this.book_instance_id = book_instance.getId();
+		this.days = days;
+		this.date = date;
+		this.acknowledged = acknowledged;
+		this.approver_id = approver.getId();
+		this.client_id = client.getId();
+
+		this.book_instance = book_instance;
+		this.approver = approver;
+		this.client = client;
 	}
 
 	public int getId() { return id; }
-	public int getUserId() { return userId; }
-	public int getBookId() { return bookId; }
+	public int getBookInstanceId() { return book_instance_id; }
 	public int getDays() { return days; }
-	public LocalDate getBorrowDate() { return borrowDate; }
-	public LocalDate getReturnDate() { return borrowDate.plusDays(days); }
+	public LocalDate getDate() { return date; }
 	public Boolean getAcknowledged() { return acknowledged; }
+	public int getApproverId() { return approver_id; }
+	public int getClientId() { return client_id; }
 
-	public int isBorrowLate(){
-		return getReturnDate().isAfter( LocalDate.now() ) ? 1 : 0;
+	public BookInstance getBookInstance() {
+		if(book_instance == null) {
+			book_instance = GetBookInstance.request(book_instance_id);
+		}
+		return book_instance;
+	}
+
+	public Admin getApprover() {
+		if(approver == null) {
+			approver = GetAdmin.request(approver_id);
+		}
+		return approver;
+	}
+
+	public Client getClient() {
+		if(client == null) {
+			client = GetClient.request(client_id);
+		}
+		return client;
 	}
 
 	public List<String> getSearchParams() {
-		var book = GetBook.request(bookId);
-		var user = GetUser.request(userId);
-		return Arrays.asList ( book.getAuthor(), book.getCategory(), book.getTitle(), borrowDate.toString(), user.getLogin());
+		List<String> searchParams = new ArrayList<>();
+		searchParams.addAll(getBookInstance().getSearchParams());
+		searchParams.add(String.valueOf(days));
+		searchParams.add(date.toString());
+		searchParams.addAll(getApprover().getSearchParams());
+		searchParams.addAll(getClient().getSearchParams());
+		return searchParams;
 	}
 
+	public String getUserLogin() {
+		Client client = getClient();
+		User user = client.getUser();
+		return user.getLogin();
+	}
+
+	public String getTitle() {
+		BookInstance bookInstance = getBookInstance();
+		Book book = bookInstance.getBook();
+		return book.getTitle();
+	}
+
+	public int isBorrowLate() {
+		LocalDate lastProperReturnDate = date.plusDays(days);
+		return LocalDate.now().isAfter(lastProperReturnDate) ? 1 : 0;
+	}
+
+	public int isBorrowNotLate() {
+		return (1 - isBorrowLate());
+	}
 }
+

@@ -3,7 +3,7 @@ package org.openjfx.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.openjfx.requests.GetAmount;
+import org.openjfx.requests.GetActiveBorrows;
 import org.openjfx.requests.GetBorrows;
 import org.openjfx.requests.GetWishes;
 
@@ -22,8 +22,6 @@ public class AdminNotificationsController implements Initializable {
 
 	@FXML
 	private Label notification3;
-	@FXML
-	private Label notification4;
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -39,17 +37,12 @@ public class AdminNotificationsController implements Initializable {
 		var wishes = GetWishes.request();
 		int how_many_wishes = wishes.size();
 
-		var borrowed = GetBorrows.request();
+		var borrowed = GetActiveBorrows.request();
 		int how_many_borrowed = borrowed.size();
-
-		var all_amount = GetAmount.request();
-
 
 		setNotification1(how_many_wishes);
 		setNotification2(how_many_borrowed);
-		setNotification3(all_amount);
-
-		setNotification4();
+		setNotification3();
 	}
 	void setNotification1(int how_many_wishes) {
 		switch (how_many_wishes) {
@@ -79,37 +72,23 @@ public class AdminNotificationsController implements Initializable {
 		}
 	}
 
-	void setNotification3(int all_amount) {
-		switch (all_amount) {
-			case 0:
-				notification3.setText("No books are available for borrow");
-				break;
-			case 1:
-				notification3.setText(all_amount + " book is available");
-				break;
-			default:
-				notification3.setText(all_amount + " books are available");
-				break;
-		}
-	}
-
-	void setNotification4(){
-		notification4.setVisible( true );
+	void setNotification3(){
+		notification3.setVisible( true );
 		int all_amount = 0;
-		for (var book: GetBorrows.request()){
-			if (book.isBorrowLate() == 0){
+		for (var book: GetActiveBorrows.request()){
+			if (book.isBorrowLate()){
 				all_amount++;
 			}
 		}
 		switch (all_amount) {
 			case 0:
-				notification4.setVisible( false );
+				notification3.setVisible( false );
 				break;
 			case 1:
-				notification4.setText(all_amount + " book is late");
+				notification3.setText(all_amount + " book is late");
 				break;
 			default:
-				notification4.setText(all_amount + " books are late");
+				notification3.setText(all_amount + " books are late");
 				break;
 		}
 	}

@@ -3,13 +3,13 @@ package org.openjfx.requests;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import org.openjfx.database.Borrow;
 import org.openjfx.database.User;
-import org.openjfx.database.Wish;
+import org.openjfx.database.Client;
+import org.openjfx.database.Admin;
 
 public class GetUsers extends Request {
 	public static ArrayList<User> fromResult(ResultSet result) {
-		ArrayList<User> users = new ArrayList<User>();
+		ArrayList<User> users = new ArrayList<>();
 		User user;
 		while((user = GetUser.fromResult(result)) != null) {
 			users.add(user);
@@ -23,29 +23,18 @@ public class GetUsers extends Request {
 		return fromResult(result);
 	}
 
-	public static ArrayList<User> request(String search) {
-		String query = "SELECT * FROM \"USER\" " +
-					   "WHERE DIFFERENCE(login, '%s') = 4 " +
-					   "ORDER BY login ASC";
-		query = String.format(query, search);
-		ResultSet result = executeRequest(query);
-		return fromResult(result);
-	}
-
-	public static ArrayList<User> fromWishes(ArrayList<Wish> wishes) {
+	public static ArrayList<User> fromClients(ArrayList<Client> clients) {
 		ArrayList<User> users = new ArrayList<User>();
-		for(Wish wish : wishes) {
-			User user = GetUser.fromWish(wish);
-			users.add(user);
+		for(Client client : clients) {
+			users.add(client.getUser());
 		}
 		return users;
 	}
 
-	public static ArrayList<User> fromBorrows(ArrayList<Borrow> borrows) {
+	public static ArrayList<User> fromAdmins(ArrayList<Admin> admins) {
 		ArrayList<User> users = new ArrayList<User>();
-		for(Borrow borrow : borrows) {
-			User user = GetUser.fromBorrow(borrow);
-			users.add(user);
+		for(Admin admin : admins) {
+			users.add(admin.getUser());
 		}
 		return users;
 	}

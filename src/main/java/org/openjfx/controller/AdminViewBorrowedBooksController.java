@@ -34,11 +34,11 @@ public class AdminViewBorrowedBooksController implements Initializable {
 	@FXML
 	private TableColumn<Borrow, LocalDate> date;
 	@FXML
+	private TableColumn<Borrow, Boolean> acknowledge;
+	@FXML
 	private TableColumn<Borrow, Void> returnBook;
 	@FXML
 	private TableColumn<Borrow, Void> collectBook;
-	@FXML
-	private TableColumn<Borrow, Boolean> acknowledge;
 	@FXML
 	private TableView<Borrow> tableBooks;
 
@@ -46,27 +46,26 @@ public class AdminViewBorrowedBooksController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-
-		userLogin.setCellValueFactory(cellData -> new SimpleObjectProperty<>(GetUser.request(cellData.getValue().getUserId()).getLogin()));
-		bookName.setCellValueFactory(cellData -> new SimpleObjectProperty<>(GetBook.request(cellData.getValue().getBookId()).getTitle()));
+		userLogin.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getUserLogin()));
+		bookName.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getTitle()));
 		days.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getDays()));
-		date.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getBorrowDate()));
+		date.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getDate()));
 		acknowledge.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getAcknowledged()));
-
 
 		tableBooks.setItems( borrowList );
 		refreshList();
 
 		this.addButtonsToTableView();
-		Utils.RowStyler.styleRows(tableBooks,  Borrow::isBorrowLate);
 
+		Utils.RowStyler.styleRows(tableBooks,  Borrow::isBorrowNotLate);
 		Utils.sortTableView(tableBooks, date, TableColumn.SortType.ASCENDING);
 	}
 
 
 	private void refreshList() {
 		borrowList.clear();
-		var bookArrayList = GetBorrows.request();
+
+		var bookArrayList = GetBorrows.fromActiveBorrows( GetActiveBorrows.request() );
 		if (bookArrayList != null) {
 			borrowList.addAll(bookArrayList);
 		}
@@ -81,6 +80,7 @@ public class AdminViewBorrowedBooksController implements Initializable {
 	void onRefreshClick(ActionEvent event) {
 		this.refreshList();
 		Utils.sortTableView(tableBooks, date, TableColumn.SortType.ASCENDING);
+		PrintBorrowStats.print();
 	}
 
 	@FXML
@@ -100,16 +100,19 @@ public class AdminViewBorrowedBooksController implements Initializable {
 	}
 
 	private void removeBook(Borrow borrow) {
-		ChangeBookAmount.request(borrow.getBookId(), 1);
-		DelBorrow.request(borrow);
+		var admin = GetAdmin.request(SceneController.getCurrentUser());
+		if (admin == null)
+		{
+			System.out.println("Admin is not logged");
+			return;
+		}
+		DelActiveBorrow.request(borrow, admin);
 		refreshList();
 
 		vbox.requestFocus(); // take away focus
 	}
 
-	private void markAsCollected(Borrow book) {
-		if (!book.getAcknowledged()) {
-			AcknowledgeBorrow.request( book );
-		}
+	private void markAsCollected(Borrow borrow) {
+		BorrowAcknowledged.request(borrow);
 	}
 }

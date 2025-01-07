@@ -8,9 +8,12 @@ import java.util.ResourceBundle;
 import org.openjfx.database.Wish;
 import org.openjfx.requests.DelWish;
 import org.openjfx.requests.GetBook;
-import org.openjfx.requests.GetUserWishes;
+import org.openjfx.requests.GetBookAuthors;
+import org.openjfx.requests.GetClient;
+import org.openjfx.requests.GetWishes;
 import org.openjfx.helpers.Filter;
 import org.openjfx.helpers.Searchable;
+import org.openjfx.helpers.UIFormater;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -41,8 +44,8 @@ public class UViewWishesController implements Initializable {
 			this.wish = wish;
 			var book = GetBook.request(wish.getBookId());
 			title = new SimpleObjectProperty<>(book.getTitle());
-			author = new SimpleObjectProperty<>(book.getAuthor());
-			category = new SimpleObjectProperty<>(book.getCategory());
+			author = new SimpleObjectProperty<>(UIFormater.formatAuthors(GetBookAuthors.request(book)));
+			category = new SimpleObjectProperty<>(book.getCategory().toString());
 			rating = new SimpleObjectProperty<>(book.getRating());
 			forDays = new SimpleObjectProperty<>(wish.getDays());
 		}
@@ -118,10 +121,15 @@ public class UViewWishesController implements Initializable {
 
 	private void refreshList() {
 		wishedList.clear();
-		var wishes = GetUserWishes.request(SceneController.getCurrentUser());
-		System.out.println(wishes.size());
-		for (var wishe : wishes) {
-			wishedList.add(new DisplayRecord(wishe));
+		var client = GetClient.request(SceneController.getCurrentUser());
+		if (client == null)
+		{
+			System.out.println("Client is not logged");
+			return;
+		}
+		var wishes = GetWishes.request(client);
+		for (var wish : wishes) {
+			wishedList.add(new DisplayRecord(wish));
 		}
 	}
 

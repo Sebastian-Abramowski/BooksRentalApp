@@ -56,14 +56,6 @@
                   <Insets />
                </VBox.margin>
             </Label>
-            <Label fx:id="notification3" alignment="CENTER" prefHeight="110.0" prefWidth="651.0" style="-fx-background-color: #5182ef; -fx-background-radius: 20px; -fx-padding: 10px 10px;" textAlignment="CENTER" textFill="WHITE">
-               <font>
-                  <Font size="20.0" />
-               </font>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Label>
          </children>
       </VBox>
 

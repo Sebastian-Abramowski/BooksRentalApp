@@ -5,11 +5,11 @@ import org.openjfx.database.Borrow;
 /*
  * User clicks off the notification. Do not show it again.
  */
-public class AcknowledgeBorrow extends Request {
+public class BorrowAcknowledged extends Request {
 	public static Borrow request(Borrow borrow) {
 		String query = "UPDATE BORROW " +
 					   "SET acknowledged = true " +
-					   "WHERE borrow_id = %d ";
+					   "WHERE id = %d ";
 		query = String.format(query, borrow.getId());
 		int result = executeUpdate(query);
 		if(result == 1) {

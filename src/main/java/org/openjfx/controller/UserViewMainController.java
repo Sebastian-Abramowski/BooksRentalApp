@@ -27,19 +27,20 @@ public class UserViewMainController {
 
 		// add new tabs
 		for (var tabData : GetTabs.request(SceneController.getCurrentUser())) {
+			System.out.println(String.format("Loading tab \"" + tabData.getTabName() + "\" from \"" + tabData.getViewFileName()));
+			var tab = new Tab(tabData.getTabName());
 			try {
-				var tab = new Tab(tabData.getTabName());
-				//System.out.println(String.format("'%s'\n'%s'\n", tabData.TabName(), tabData.ViewFileName()));
-				tab.setContent(SceneController.getParentFromFxml(tabData.getViewFileName()));
-				tab.setClosable(false);
-				tabPane.getTabs().add(tab);
-				tabsByName.put(tabData.getTabName(), tab);
+				var content = SceneController.getParentFromFxml(tabData.getViewFileName());
+				tab.setContent(content);
 			}
-			catch (IOException e) {
-				System.out.println("Could not load tab of " + tabData.getTabName() + "\nerror:\n" + e);
+			catch (Exception e) {
+				System.out.println("Error occured while loading" + tabData.getTabName() + "\nerror:\n" + e);
+				continue;
 			}
+			tab.setClosable(false);
+			tabPane.getTabs().add(tab);
+			tabsByName.put(tabData.getTabName(), tab);
 		}
-
 		instance = this;
     }
 

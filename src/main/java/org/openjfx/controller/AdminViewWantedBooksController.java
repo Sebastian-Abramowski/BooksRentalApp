@@ -1,10 +1,14 @@
 package org.openjfx.controller;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.VBox;
+
+import org.openjfx.database.Log;
 import org.openjfx.database.Wish;
 import org.openjfx.requests.*;
 
@@ -35,14 +39,14 @@ public class AdminViewWantedBooksController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-		userLogin.setCellValueFactory(cellData -> new SimpleObjectProperty<>(GetUser.request(cellData.getValue().getUserId()).getLogin()));
+		userLogin.setCellValueFactory(cellData -> new SimpleObjectProperty<>(GetUser.request(cellData.getValue().getClientId()).getLogin()));
 		bookName.setCellValueFactory(cellData -> new SimpleObjectProperty<>(GetBook.request(cellData.getValue().getBookId()).getTitle()));
 		days.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getDays()));
 
 		tableBooks.setItems(books);
 		refreshList();
 		this.addButtonsToTableView();
-		Utils.RowStyler.styleRows(tableBooks, wishedBook -> wishedBook.isWishDoable());
+		Utils.RowStyler.styleRows(tableBooks, Wish::isWishDoable);
 	}
 	private void refreshList() {
 		books.clear();
@@ -53,7 +57,18 @@ public class AdminViewWantedBooksController implements Initializable {
 	}
 	@FXML
 	void onRefreshClick(ActionEvent event) {
+		var logs = GetLogs.request();
+		printLogs( logs );
 		refreshList();
+	}
+
+	private static void printLogs(ArrayList<Log> logs) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		for (var log: logs){
+			String operation = log.getOperationType();
+			String date = sdf.format(log.getDate());
+			String table = log.getTableName();
+			System.out.printf( "%s %s %s\n", operation, date, table);}
 	}
 
 	private void addButtonsToTableView() {
@@ -61,16 +76,21 @@ public class AdminViewWantedBooksController implements Initializable {
 	}
 
 	private void acknowledgeBook(Wish wish) {
-		var book = GetBook.request(wish.getBookId());
-		int amount = book.getAmount();
-		if (amount > 0) {
-			var borrow = AcceptWish.request(wish);
-			//TODO some exception handling myb
-			refreshList();
-		}
-		else
-			System.out.println("not enough books in store");
-
 		vbox.requestFocus(); // take away focus
+		var admin = GetAdmin.request(SceneController.getCurrentUser());
+		if (admin == null)
+		{
+			System.out.println("Admin is not logged");
+			return;
+		}
+
+		var borrow = AcceptWish.request(wish, admin);
+		if (borrow == null)
+		{
+			System.out.println("Error occurred");
+			return;
+		}
+
+		refreshList();
 	}
 }

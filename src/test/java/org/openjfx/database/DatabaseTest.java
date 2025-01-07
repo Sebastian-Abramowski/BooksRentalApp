@@ -18,13 +18,13 @@ public class DatabaseTest {
 	public void setup() {
 		database = Database.getInstance();
 
-		int status = database.executeUpdate("CREATE TABLE test_table (id INT PRIMARY KEY, name VARCHAR(255))");
+		int status = database.executeUpdate("CREATE TABLE IF NOT EXISTS test_table (id INT PRIMARY KEY, name VARCHAR(255))");
 		assertEquals(0, status);
 	}
 
 	@After
 	public void teardown() {
-		int status = database.executeUpdate("DROP TABLE test_table");
+		int status = database.executeUpdate("DROP TABLE IF EXISTS test_table");
 		assertEquals(0, status);
 
 		database.close();
@@ -60,17 +60,47 @@ public class DatabaseTest {
 	}
 
 	/*
-	 * If this fails, you've seriously fucked up. Run DatabaseInitializer.
+	 * If this fails, you've seriously screwed up. Run DatabaseInitializer.
 	 */
 	@Test
 	public void testTables() {
-		Boolean status = database.tableExists("USER");
+		Boolean status = database.tableExists("LOG");
+		assertEquals(true, status);
+
+		status = database.tableExists("ACTIVE_BORROW");
+		assertEquals(true, status);
+
+		status = database.tableExists("ARCHIVED_BORROW");
+		assertEquals(true, status);
+
+		status = database.tableExists("BORROW");
+		assertEquals(true, status);
+
+		status = database.tableExists("WISH");
+		assertEquals(true, status);
+
+		status = database.tableExists("BOOK_INSTANCE");
+		assertEquals(true, status);
+
+		status = database.tableExists("ADMIN");
+		assertEquals(true, status);
+
+		status = database.tableExists("CLIENT");
+		assertEquals(true, status);
+
+		status = database.tableExists("BOOK_AUTHOR");
+		assertEquals(true, status);
+
+		status = database.tableExists("PERSON");
 		assertEquals(true, status);
 
 		status = database.tableExists("BOOK");
 		assertEquals(true, status);
 
-		status = database.tableExists("WISH");
+		status = database.tableExists("CATEGORY");
+		assertEquals(true, status);
+
+		status = database.tableExists("USER");
 		assertEquals(true, status);
 	}
 }

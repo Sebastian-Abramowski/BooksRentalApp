@@ -1,13 +1,22 @@
-## System dla księgarni
+## Jak się logować aby sprawdzić aplikację:
 
-Aplikacja desktopowa opcjonalnie z bazą danych
+## Poziom admina
 
-### Planowane funkcjonalności:
+login: franek
+password: 123
 
-- rejestracja konta
-- logowanie z poziomu pracownika oraz klienta
-- wylogowywanie się
-- wyszukiwanie książek w bazie danych
-- pracownik może dodawać książki do bazy oraz je zmieniać np. ustawiając je jako niedostępne
-- pracownik może mieć dostęp do statystyk np. ile razy dana książka została kupiona
-- klient może zakupić książki, dodać do listy życzeń albo zarezerwować do wypożyczenia
+login: boguś
+password: 123
+
+## Przykładowi użytkownicy
+
+login: seba
+password: 123
+
+login: olek
+password: 123
+
+login: patryk
+password: 123
+
+### Ewentualnie można samemu się zarejestorwać poprawnie jako nowy użytkownik i zalogować

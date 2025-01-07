@@ -40,7 +40,7 @@
 
       <VBox alignment="TOP_CENTER" spacing="13.37">
          <children>
-            <Label fx:id="notification1" alignment="CENTER" prefHeight="80.0" prefWidth="651.0" style="-fx-background-color: #2563eb; -fx-background-radius: 20px; -fx-padding: 10px 10px;" textAlignment="CENTER" textFill="WHITE">
+            <Label fx:id="notification1" alignment="CENTER" prefHeight="105.0" prefWidth="651.0" style="-fx-background-color: #2563eb; -fx-background-radius: 20px; -fx-padding: 10px 10px;" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="20.0" />
                </font>
@@ -48,7 +48,7 @@
                   <Insets />
                </VBox.margin>
             </Label>
-            <Label fx:id="notification2" alignment="CENTER" prefHeight="80.0" prefWidth="651.0" style="-fx-background-color: #3b73ed; -fx-background-radius: 20px; -fx-padding: 10px 10px;" textAlignment="CENTER" textFill="WHITE">
+            <Label fx:id="notification2" alignment="CENTER" prefHeight="105.0" prefWidth="651.0" style="-fx-background-color: #3b73ed; -fx-background-radius: 20px; -fx-padding: 10px 10px;" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="20.0" />
                </font>
@@ -56,18 +56,13 @@
                   <Insets />
                </VBox.margin>
             </Label>
-            <Label fx:id="notification3" alignment="CENTER" prefHeight="80.0" prefWidth="651.0" style="-fx-background-color: #5182ef; -fx-background-radius: 20px; -fx-padding: 10px 10px;" textAlignment="CENTER" textFill="WHITE">
+            <Label fx:id="notification3" alignment="CENTER" prefHeight="105.0" prefWidth="651.0" style="-fx-background-color: #5182ef; -fx-background-radius: 20px; -fx-padding: 10px 10px;" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="20.0" />
                </font>
                <VBox.margin>
                   <Insets />
                </VBox.margin>
-            </Label>
-            <Label fx:id="notification4" alignment="CENTER" prefHeight="80.0" prefWidth="651.0" style="-fx-background-color: #6692f1; -fx-background-radius: 20px; -fx-padding: 10px 10px;" textAlignment="CENTER" textFill="WHITE">
-               <font>
-                  <Font size="20.0" />
-               </font>
             </Label>
          </children>
       </VBox>
